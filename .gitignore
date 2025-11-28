@@ -2,8 +2,10 @@
 node_modules/
 watchlist-web-app-functions/functions/node_modules/
 .firebase/
+.firebaserc
 .env
 .env.*
+firebase-config.js
 *.log
 coverage/
 dist/

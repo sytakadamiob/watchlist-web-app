@@ -1,5 +1,12 @@
 # Fixing Firebase API Key Error
 
+## Step 0: Keep your Firebase config out of Git
+
+1. Copy `firebase-config.example.js` → `firebase-config.js`.
+2. Paste your real Firebase Web API config into `firebase-config.js`.
+3. Never commit `firebase-config.js` (it's already listed in `.gitignore`).
+4. If `main.js` throws `Missing Firebase config`, it means this file is absent or still has placeholders.
+
 The error "API key not valid" usually means one of these issues:
 
 ## Step 1: Enable Firebase Authentication
@@ -23,7 +30,7 @@ The API key might be restricted and not allowing localhost. Here's how to fix it
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Select your project: **watchlist-app-f1dbc**
 3. Go to **APIs & Services** → **Credentials**
-4. Find your API key: `AIzaSyDQdsfgxHtldyRSxr227o6rvuvuR2i8CGT4`
+4. Find your API key (the one you reset/created for this project)
 5. Click on it to edit
 6. Under **Application restrictions**, select **HTTP referrers (web sites)**
 7. Click **Add an item** and add these referrers:
@@ -44,8 +51,8 @@ The API key might be restricted and not allowing localhost. Here's how to fix it
 3. Click the gear icon ⚙️ → **Project settings**
 4. Scroll down to **Your apps** section
 5. Find your web app or click **Add app** → **Web** if you don't have one
-6. Copy the **apiKey** value
-7. Replace it in `main.js` at line 20
+6. Copy the values for `apiKey`, `authDomain`, etc.
+7. Paste them into `firebase-config.js` (see Step 0)
 
 ## Step 3: Verify Firebase Services are Enabled
 

@@ -1,20 +1,12 @@
 // ---- Firebase client configuration ----
-// NOTE:
-// - This Firebase config is meant to be used in client-side code; it is OK for
-//   the browser to see these values. Real protection comes from Firebase
-//   security rules (e.g. Firestore rules and Auth).
-// - Still avoid committing your real config to a public repo if your rules are
-//   wide open.
-// (Firebase console → Project settings → General → Your apps → Web app).
-const firebaseConfig = {
-  apiKey: "AIzaSyA1RebcqLur06rIpXikKEUqzKFeONd9rcw",
-  authDomain: "watchlist-app-defb4.firebaseapp.com",
-  projectId: "watchlist-app-defb4",
-  storageBucket: "watchlist-app-defb4.firebasestorage.app",
-  messagingSenderId: "87335175860",
-  appId: "1:87335175860:web:e97a5cbc6ca96284ea79e1",
-  measurementId: "G-CDP9KF0WB9"
-};
+// The real config now lives in firebase-config.js (git-ignored) to avoid leaks.
+const firebaseConfig = window.__FIREBASE_CONFIG__;
+
+if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_FIREBASE_API_KEY") {
+  throw new Error(
+    "Missing Firebase config. Copy firebase-config.example.js to firebase-config.js and fill in your project keys."
+  );
+}
 
 if (window.firebase && !firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
