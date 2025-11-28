@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>watch‑l8r | Save now and watch later</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="hero-inner">
+        <div>
+          <p class="eyebrow">
+            <span class="logo-word">watch</span><span class="logo-highlight">‑l8r</span>
+          </p>
+          <h1>
+            <span class="gradient-text">Save now and watch later.</span>
+          </h1>
+          <p class="lede">
+            Jot down what you want to watch and keep it organized just the way you like.
+          </p>
+        </div>
+        <div class="profile-card" id="profile-card">
+          <div class="profile-card__body guest">
+            <div>
+              <p class="profile-card__eyebrow">You’re not signed in</p>
+              <p class="profile-card__title">Keep your vibes in sync</p>
+              <p class="profile-card__subtitle">
+                Sign in to sync.
+              </p>
+            </div>
+            <button
+              type="button"
+              class="profile-cta"
+              id="profile-signin"
+              data-profile-signin
+            >
+              <span aria-hidden="true">👤</span>
+              <span>Sign in</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="panel search-panel">
+        <form id="search-form" class="search-form">
+          <label class="sr-only" for="search-query">Search term</label>
+          <input
+            id="search-query"
+            type="text"
+            placeholder="Search for a movie or TV show..."
+            autocomplete="off"
+            required
+          />
+          <select id="search-type">
+            <option value="multi">Movies & TV</option>
+            <option value="movie">Movies only</option>
+            <option value="tv">TV only</option>
+          </select>
+          <button type="submit">Search</button>
+        </form>
+        <p id="search-hint" class="hint">
+          Tip: remember to add your TMDb API key inside <code>main.js</code>.
+        </p>
+        <div id="search-results" class="search-results"></div>
+      </section>
+
+      <div class="panel-row">
+        <section class="panel reminder-panel">
+          <div class="reminder-header">
+            <div class="reminder-title-group">
+              <span class="reminder-icon" aria-label="Alert">!</span>
+              <h2>Don't Forget!</h2>
+              <span class="reminder-count-badge" id="reminder-count">0</span>
+            </div>
+          </div>
+          <div id="reminder-summary" class="reminder-summary"></div>
+          <div id="reminder-list" class="reminder-list empty-state">
+            Nothing waiting yet. Add something from the search results.
+          </div>
+        </section>
+
+        <section class="panel stats-panel vintage-panel">
+          <div class="stats-panel-header">
+            <div>
+              <h2>
+                Viewing Stats
+                <span class="stats-heading-icon" aria-hidden="true">
+                  <svg viewBox="0 0 28 28" focusable="false">
+                    <rect x="3" y="16" width="4" height="8" rx="1" class="stats-bars-fill"></rect>
+                    <rect x="10" y="12" width="4" height="12" rx="1" class="stats-bars-fill"></rect>
+                    <rect x="17" y="8" width="4" height="16" rx="1" class="stats-bars-fill"></rect>
+                    <rect x="24" y="4" width="4" height="20" rx="1" class="stats-bars-fill"></rect>
+                    <path class="stats-line" d="M3 16l7-5 7 6 7-9" fill="none"></path>
+                  </svg>
+                </span>
+              </h2>
+              <p class="stats-panel-subtitle">
+                Quick glance at how the queue is shaping up.
+              </p>
+            </div>
+          </div>
+          <div class="stat-grid compact" id="profile-stats"></div>
+        </section>
+      </div>
+
+      <section class="panel">
+        <div class="panel-header panel-header-tabs">
+          <div
+            id="main-tabs"
+            class="main-tabs"
+            role="tablist"
+            aria-label="View"
+          >
+            <button
+              type="button"
+              class="tab tab-active"
+              data-tab="watchlist"
+              role="tab"
+              aria-selected="true"
+            >
+              Watchlist
+            </button>
+            <button
+              type="button"
+              class="tab"
+              data-tab="collections"
+              role="tab"
+              aria-selected="false"
+            >
+              Collections
+            </button>
+          </div>
+          <div class="filters" id="watchlist-filters">
+            <div
+              id="status-chips"
+              class="status-chips"
+              role="tablist"
+              aria-label="Filter by status"
+            >
+              <button
+                type="button"
+                class="chip chip-active"
+                data-status="all"
+                role="tab"
+                aria-selected="true"
+              >
+                All
+              </button>
+              <button
+                type="button"
+                class="chip"
+                data-status="favorites"
+                role="tab"
+                aria-selected="false"
+              >
+                Favorites
+              </button>
+              <button
+                type="button"
+                class="chip"
+                data-status="watch_later"
+                role="tab"
+                aria-selected="false"
+              >
+                Watch later
+              </button>
+              <button
+                type="button"
+                class="chip"
+                data-status="watching"
+                role="tab"
+                aria-selected="false"
+              >
+                Watching
+              </button>
+              <button
+                type="button"
+                class="chip"
+                data-status="on_hold"
+                role="tab"
+                aria-selected="false"
+              >
+                On hold
+              </button>
+              <button
+                type="button"
+                class="chip"
+                data-status="finished"
+                role="tab"
+                aria-selected="false"
+              >
+                Finished
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="watchlist" class="watchlist empty-state">
+          Start by adding something that sparks joy ✨
+        </div>
+        <div
+          id="collections-view"
+          class="collections hidden"
+          aria-live="polite"
+        ></div>
+      </section>
+    </main>
+
+    <template id="search-card-template">
+      <article class="search-card">
+        <div class="poster-frame">
+          <img alt="" />
+        </div>
+        <div class="search-card-body">
+          <h3></h3>
+          <p class="meta"></p>
+          <p class="overview"></p>
+        </div>
+        <button class="ghost-btn">Add to watchlist</button>
+      </article>
+    </template>
+
+    <template id="watch-card-template">
+      <article class="watch-card">
+        <div class="poster-frame">
+          <img alt="" />
+          <button
+            type="button"
+            class="favorite-toggle"
+            aria-label="Toggle favorite"
+          >
+            ❤
+          </button>
+        </div>
+        <div class="watch-card-info">
+          <div class="watch-card-headline">
+            <div>
+              <span class="item-order"></span>
+              <p class="item-type"></p>
+              <h3></h3>
+              <p class="meta"></p>
+            </div>
+            <button
+              class="remove-btn"
+              aria-label="Remove item"
+              type="button"
+            >
+              <span aria-hidden="true">×</span>
+              <span class="sr-only">Remove</span>
+            </button>
+          </div>
+          <div class="watch-card-footer">
+            <button
+              type="button"
+              class="watch-trailer-btn"
+              aria-label="Open trailer"
+            >
+              Trailer
+            </button>
+            <div class="watch-card-meta">
+              <span class="status-label"></span>
+              <span class="status-divider hidden" aria-hidden="true"></span>
+            <div class="tag-list"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <template id="reminder-card-template">
+      <article class="reminder-card">
+        <img alt="" />
+        <span class="reminder-days-ago"></span>
+        <p class="sr-only"></p>
+      </article>
+    </template>
+
+    <div id="detail-modal" class="modal hidden" aria-hidden="true">
+      <div class="modal-backdrop"></div>
+      <div
+        class="modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="detail-title"
+      >
+        <button
+          type="button"
+          class="modal-close"
+          aria-label="Close details"
+        >
+          ✕
+        </button>
+        <div class="modal-poster">
+          <img id="detail-poster" alt="" />
+        </div>
+        <p id="detail-type" class="detail-type"></p>
+        <h2 id="detail-title"></h2>
+        <p id="detail-meta" class="detail-meta"></p>
+        <div class="modal-controls">
+          <label>
+            Status
+            <select id="detail-status">
+              <option value="watch_later">Watch later</option>
+              <option value="watching">Watching</option>
+              <option value="on_hold">On hold</option>
+              <option value="finished">Finished</option>
+            </select>
+          </label>
+          <button id="detail-trailer" type="button" class="trailer-pill">
+            ▶ Watch trailer
+          </button>
+          <div class="rating-group">
+            <span class="rating-label">Rating</span>
+            <div id="detail-stars" class="rating-stars">
+              <button type="button" class="star" data-star-index="0">★</button>
+              <button type="button" class="star" data-star-index="1">★</button>
+              <button type="button" class="star" data-star-index="2">★</button>
+              <button type="button" class="star" data-star-index="3">★</button>
+              <button type="button" class="star" data-star-index="4">★</button>
+            </div>
+          </div>
+          <label>
+            Finished date
+            <input type="date" id="detail-finished" />
+          </label>
+        </div>
+        <div class="tags-group">
+          <label for="detail-tags-input">Tags</label>
+          <input
+            id="detail-tags-input"
+            type="text"
+            placeholder="Add tag and press Enter"
+          />
+          <div id="detail-tags-list" class="tag-list"></div>
+          <div id="detail-tag-suggestions" class="tag-suggestions"></div>
+        </div>
+        <label class="notes-label">
+          Notes
+          <textarea
+            id="detail-notes"
+            rows="4"
+            placeholder="Thoughts, vibes, etc."
+          ></textarea>
+        </label>
+        <button
+          id="detail-remove"
+          type="button"
+          class="ghost-btn danger-btn"
+        >
+          Remove from watchlist
+        </button>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    <footer class="app-footer" id="footer">
+      <div class="footer-primary">
+        <div>
+          <p class="footer-title">watch‑l8r</p>
+          <p class="footer-copy">© <span id="footer-year"></span> watch‑l8r. All rights reserved.</p>
+          <p class="footer-credit">
+            This product uses the TMDb API but is not endorsed or certified by TMDb.
+          </p>
+        </div>
+        <div class="footer-socials">
+          <span>Follow me on</span>
+          <a
+            href="https://github.com/sytakadamiob"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="Follow on GitHub"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.93.58.11.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.38-3.88-1.38-.53-1.34-1.29-1.7-1.29-1.7-1.06-.73.08-.72.08-.72 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.72 1.27 3.39.97.11-.75.41-1.27.75-1.56-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.19-3.1-.12-.3-.52-1.52.11-3.17 0 0 .98-.31 3.2 1.18a11.04 11.04 0 0 1 5.82 0c2.22-1.49 3.2-1.18 3.2-1.18.63 1.65.23 2.87.11 3.17.74.81 1.19 1.84 1.19 3.1 0 4.43-2.68 5.41-5.23 5.69.42.36.8 1.08.8 2.18 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55C20.21 21.39 23.5 17.09 23.5 12 23.5 5.65 18.35.5 12 .5Z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/swann-yae-toee-135633376/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="Connect on LinkedIn"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M20.45 20.45h-3.55v-5.6c0-1.33-.02-3.05-1.86-3.05-1.86 0-2.15 1.45-2.15 2.95v5.7H9.34V9.5h3.4v1.49h.05c.47-.89 1.62-1.83 3.34-1.83 3.57 0 4.23 2.35 4.23 5.4v5.89ZM5.34 8.02a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm-1.78 12.43h3.56V9.5H3.56v10.95ZM22.22 0H1.78C.8 0 0 .79 0 1.77v20.45C0 23.2.79 24 1.78 24h20.45c.98 0 1.77-.79 1.77-1.78V1.77C24 .79 23.21 0 22.22 0Z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://www.instagram.com/sytakadamiob/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link"
+            aria-label="Follow on Instagram"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 2.2c3.2 0 3.58.01 4.85.07 1.17.05 1.97.24 2.43.4.61.24 1.05.53 1.51.99.46.46.75.9.99 1.51.16.46.35 1.26.4 2.43.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.24 1.97-.4 2.43-.24.61-.53 1.05-.99 1.51a3.2 3.2 0 0 1-1.51.99c-.46.16-1.26.35-2.43.4-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.97-.24-2.43-.4a3.2 3.2 0 0 1-1.51-.99 3.2 3.2 0 0 1-.99-1.51c-.16-.46-.35-1.26-.4-2.43C2.21 15.58 2.2 15.2 2.2 12s.01-3.58.07-4.85c.05-1.17.24-1.97.4-2.43.24-.61.53-1.05.99-1.51.46-.46.9-.75 1.51-.99.46-.16 1.26-.35 2.43-.4C8.42 2.21 8.8 2.2 12 2.2Zm0 1.8c-3.15 0-3.51.01-4.75.07-.98.04-1.51.21-1.86.35-.47.18-.8.4-1.15.75-.35.35-.57.68-.75 1.15-.14.35-.31.88-.35 1.86-.06 1.24-.07 1.6-.07 4.75s.01 3.51.07 4.75c.04.98.21 1.51.35 1.86.18.47.4.8.75 1.15.35.35.68.57 1.15.75.35.14.88.31 1.86.35 1.24.06 1.6.07 4.75.07s3.51-.01 4.75-.07c.98-.04 1.51-.21 1.86-.35.47-.18.8-.4 1.15-.75.35-.35.57-.68.75-1.15.14-.35.31-.88.35-1.86.06-1.24.07-1.6.07-4.75s-.01-3.51-.07-4.75c-.04-.98-.21-1.51-.35-1.86a2.4 2.4 0 0 0-.75-1.15 2.4 2.4 0 0 0-1.15-.75c-.35-.14-.88-.31-1.86-.35-1.24-.06-1.6-.07-4.75-.07Zm0 3.43a4.37 4.37 0 1 1 0 8.74 4.37 4.37 0 0 1 0-8.74Zm0 1.8a2.57 2.57 0 1 0 0 5.14 2.57 2.57 0 0 0 0-5.14Zm5.57-2.79a1.02 1.02 0 1 1-2.04 0 1.02 1.02 0 0 1 2.04 0Z"
+                fill="currentColor"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://sytakadamiob.itch.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="social-link social-link--text"
+            aria-label="Follow on itch.io"
+          >
+            <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+              <circle cx="32" cy="32" r="30" fill="currentColor" />
+              <text
+                x="32"
+                y="37"
+                text-anchor="middle"
+                font-size="16"
+                font-family="Space Grotesk, sans-serif"
+                font-weight="700"
+                fill="#05070f"
+              >
+                itch.io
+              </text>
+            </svg>
+          </a>
+        </div>
+      </div>
+      <button type="button" class="back-to-top" aria-label="Back to top">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            d="M12 6.5 5 13.5l1.5 1.5L12 9.5l5.5 5.5 1.5-1.5Z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </footer>
+
+    <!-- Firebase SDKs (compat version for simple integration) -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore-compat.js"></script>
+
+    <script src="main.js" defer></script>
+  </body>
+</html>
+
