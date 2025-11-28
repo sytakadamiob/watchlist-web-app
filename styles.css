@@ -166,7 +166,7 @@ h1 {
 .gradient-text {
   display: inline-block;
   font-weight: 600;
-  background: linear-gradient(90deg, #f8e2c0, #f7b862);
+  background: linear-gradient(90deg, #fff6ec, #ffe3bc 55%, #ffd38d);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
