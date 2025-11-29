@@ -387,6 +387,12 @@
           <p class="footer-credit">
             This product uses the TMDb API but is not endorsed or certified by TMDb.
           </p>
+          <button type="button" class="help-toggle" aria-expanded="false" aria-controls="footer-faq">
+            <span>Help & FAQs</span>
+            <svg class="help-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 6.5 5 13.5l1.5 1.5L12 9.5l5.5 5.5 1.5-1.5Z" fill="currentColor" />
+            </svg>
+          </button>
         </div>
         <div class="footer-socials">
           <span>Follow me on</span>
@@ -456,22 +462,15 @@
           </a>
         </div>
       </div>
-      <div class="footer-help">
-        <button type="button" class="help-toggle" aria-expanded="false" aria-controls="footer-faq">
-          <span>Help & FAQ</span>
-          <svg class="help-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 6.5 5 13.5l1.5 1.5L12 9.5l5.5 5.5 1.5-1.5Z" fill="currentColor" />
-          </svg>
-        </button>
-        <div id="footer-faq" class="footer-faq hidden" aria-hidden="true">
-          <div class="faq-item">
-            <h4 class="faq-question">How do I add movies or TV shows to my watchlist?</h4>
-            <p class="faq-answer">Use the search bar at the top to find titles from TMDb. Click "Add to watchlist" on any search result card to save it.</p>
-          </div>
-          <div class="faq-item">
-            <h4 class="faq-question">How do I add items to Collections?</h4>
-            <p class="faq-answer">Open any item's detail modal (click the item), then scroll to the "Collections" section at the bottom. Click "Add to collection" to create or add to existing collections.</p>
-          </div>
+      <div id="footer-faq" class="footer-faq hidden" aria-hidden="true">
+        <div class="faq-item">
+          <h4 class="faq-question">How do I add movies or TV shows to my watchlist?</h4>
+          <p class="faq-answer">Use the search bar at the top to find titles from TMDb. Click "Add to watchlist" on any search result card to save it.</p>
+        </div>
+        <div class="faq-item">
+          <h4 class="faq-question">How do I add items to Collections?</h4>
+          <p class="faq-answer">Add custom tags to any item in the detail modal. Tags act as collection names—items with the same tag will appear together in the Collections view. For example, adding the tag "animation" to multiple items creates an "animation" collection.</p>
+        </div>
           <div class="faq-item">
             <h4 class="faq-question">How do I organize my watchlist?</h4>
             <p class="faq-answer">Use the status dropdown (Watch later, Watching, On hold, Finished) in each item's detail modal. Add tags for custom organization, and drag items to reorder them.</p>

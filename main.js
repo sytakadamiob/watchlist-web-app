@@ -558,7 +558,11 @@ function populateDetailModal(item) {
     item.mediaType === "movie" ? "Movie" : "Series"
   }`;
   detailStatusEl.value = item.status;
-  detailFinishedEl.value = item.finishedDate || "";
+  const isFinished = item.status === "finished";
+  detailFinishedEl.value = isFinished ? (item.finishedDate || "") : "";
+  detailFinishedEl.disabled = !isFinished;
+  detailFinishedEl.placeholder = isFinished ? "mm/dd/yyyy" : "Finished date available when status is Finished";
+  detailFinishedEl.classList.toggle("input-disabled", !isFinished);
   detailNotesEl.value = item.notes || "";
   detailTagsInputEl.value = "";
   renderModalTags(item);
