@@ -1399,16 +1399,9 @@ function initializeWatchButton(button, item, { stopPropagation = false } = {}) {
   if (!item.watchLink) {
     item.watchLink = buildTmdbWatchLink(item, DEFAULT_WATCH_REGION);
   }
-  const labelEl = button.querySelector(".watch-label");
-  if (labelEl) {
-    labelEl.textContent = item.watchProviderName
-      ? `Watch · ${item.watchProviderName}`
-      : "Watch";
-  } else {
-    button.textContent = item.watchProviderName
-      ? `Watch · ${item.watchProviderName}`
-      : "Watch";
-  }
+  button.textContent = item.watchProviderName
+    ? `Watch · ${item.watchProviderName}`
+    : "Watch";
   button.disabled = !item.watchLink;
   button.onclick = (event) => {
     if (stopPropagation) {

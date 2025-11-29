@@ -1498,9 +1498,10 @@ h1 {
 }
 
 .modal-watch-actions button {
-  flex: 1 1 180px;
+  flex: 1 1 140px;
   justify-content: center;
   min-width: 0;
+  padding: 0.22rem 0.6rem;
 }
 
 .rating-label {
