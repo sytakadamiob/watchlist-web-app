@@ -2,9 +2,9 @@
 
 ## Step 0: Keep your Firebase config out of Git
 
-1. Copy `firebase-config.example.js` → `firebase-config.js`.
-2. Paste your real Firebase Web API config into `firebase-config.js`.
-3. Never commit `firebase-config.js` (it's already listed in `.gitignore`).
+1. Copy `config/firebase-config.example.js` → `config/firebase-config.js`.
+2. Paste your real Firebase Web API config into `config/firebase-config.js`.
+3. Never commit `config/firebase-config.js` (it's already listed in `.gitignore`).
 4. If `main.js` throws `Missing Firebase config`, it means this file is absent or still has placeholders.
 
 The error "API key not valid" usually means one of these issues:
@@ -52,7 +52,7 @@ The API key might be restricted and not allowing localhost. Here's how to fix it
 4. Scroll down to **Your apps** section
 5. Find your web app or click **Add app** → **Web** if you don't have one
 6. Copy the values for `apiKey`, `authDomain`, etc.
-7. Paste them into `firebase-config.js` (see Step 0)
+7. Paste them into `config/firebase-config.js` (see Step 0)
 
 ## Step 3: Verify Firebase Services are Enabled
 

@@ -13,7 +13,7 @@ Firebase requires the app to run on `http://` or `https://` protocol, not `file:
    ```
 3. Run the server script:
    ```bash
-   ./start-server.sh
+   ./scripts/start-server.sh
    ```
 4. Open your browser to: **http://localhost:8000**
 
