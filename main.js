@@ -22,6 +22,27 @@ const db = window.firebase ? firebase.firestore() : null;
 const TMDB_API_KEY = "4fb7f0c0baf5a13a431c5655b43510c2";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 const DEFAULT_WATCH_REGION = "US";
+const PROVIDER_PRIORITIES = ["flatrate", "ads", "free", "rent", "buy"];
+const PROVIDER_LINK_BUILDERS = {
+  8: (item) => `https://www.netflix.com/search?q=${encodeURIComponent(item.title)}`,
+  9: (item) =>
+    `https://www.amazon.com/s?k=${encodeURIComponent(item.title)}&i=instant-video`,
+  10: (item) =>
+    `https://www.amazon.com/s?k=${encodeURIComponent(item.title)}&i=instant-video`,
+  15: (item) => `https://www.hulu.com/search?q=${encodeURIComponent(item.title)}`,
+  177: (item) =>
+    `https://www.funimation.com/search/?q=${encodeURIComponent(item.title)}`,
+  1899: (item) => `https://www.peacocktv.com/search?q=${encodeURIComponent(item.title)}`,
+  283: (item) =>
+    `https://www.crunchyroll.com/search?from=search&q=${encodeURIComponent(item.title)}`,
+  337: (item) =>
+    `https://www.disneyplus.com/search?q=${encodeURIComponent(item.title)}`,
+  350: (item) =>
+    `https://tv.apple.com/search?term=${encodeURIComponent(item.title)}`,
+  384: (item) => `https://www.max.com/search?q=${encodeURIComponent(item.title)}`,
+  531: (item) =>
+    `https://www.paramountplus.com/shows/?search=${encodeURIComponent(item.title)}`,
+};
 
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w342";
 const STORAGE_KEY = "vibewatch_list_v1";
@@ -59,7 +80,7 @@ let draggedItemId = null;
 let toastTimeout = null;
 let toastHideTimeout = null;
 let statsRenderQueued = false;
-const watchProviderLinkCache = new Map();
+const watchProviderInfoCache = new Map();
 
 function getItemById(id) {
   return watchlist.find((entry) => entry.id === id);
@@ -116,8 +137,11 @@ function applyLegacyDefaults(list = watchlist) {
   let mutated = false;
   list.forEach((item) => {
     if (item && !item.watchLink && item.tmdbId) {
-      item.watchLink = buildTmdbLink(item);
+      item.watchLink = buildTmdbWatchLink(item, DEFAULT_WATCH_REGION);
       mutated = true;
+    }
+    if (item && typeof item.watchProviderName !== "string") {
+      item.watchProviderName = "";
     }
   });
   if (mutated) {
@@ -529,6 +553,13 @@ function populateDetailModal(item) {
   }
   if (detailWatchEl) {
     initializeWatchButton(detailWatchEl, item);
+    ensureWatchLink(item)
+      .then(() => {
+        if (detailWatchEl.isConnected) {
+          initializeWatchButton(detailWatchEl, item);
+        }
+      })
+      .catch(() => {});
   }
 }
 
@@ -1031,10 +1062,27 @@ function buildTmdbLink(item) {
   return `https://www.themoviedb.org/${typePath}/${item.tmdbId}`;
 }
 
-async function fetchWatchProviderLink(tmdbId, mediaType = "movie", region = DEFAULT_WATCH_REGION) {
-  const cacheKey = `${region}-${mediaType}-${tmdbId}`;
-  if (watchProviderLinkCache.has(cacheKey)) {
-    return watchProviderLinkCache.get(cacheKey);
+function buildTmdbWatchLink(item, region = DEFAULT_WATCH_REGION) {
+  if (!item || !item.tmdbId) return "";
+  const typePath = item.mediaType === "tv" ? "tv" : "movie";
+  return `https://www.themoviedb.org/${typePath}/${item.tmdbId}/watch?locale=${region}`;
+}
+
+function pickBestProvider(regionData) {
+  if (!regionData) return null;
+  for (const bucket of PROVIDER_PRIORITIES) {
+    const entries = regionData[bucket];
+    if (Array.isArray(entries) && entries.length) {
+      return entries[0];
+    }
+  }
+  return null;
+}
+
+async function fetchWatchProviderInfo(tmdbId, mediaType = "movie") {
+  const cacheKey = `${mediaType}-${tmdbId}`;
+  if (watchProviderInfoCache.has(cacheKey)) {
+    return watchProviderInfoCache.get(cacheKey);
   }
   const typePath = mediaType === "tv" ? "tv" : "movie";
   const url = new URL(`${TMDB_BASE_URL}/${typePath}/${tmdbId}/watch/providers`);
@@ -1044,27 +1092,43 @@ async function fetchWatchProviderLink(tmdbId, mediaType = "movie", region = DEFA
     throw new Error("Failed to load watch providers");
   }
   const data = await response.json();
-  const link = data?.results?.[region]?.link || "";
-  watchProviderLinkCache.set(cacheKey, link);
-  return link;
+  const regionData = data?.results?.[DEFAULT_WATCH_REGION] || null;
+  watchProviderInfoCache.set(cacheKey, regionData);
+  return regionData;
 }
 
 async function ensureWatchLink(item) {
   if (!item) return "";
   if (!item.watchLink) {
-    item.watchLink = buildTmdbLink(item);
+    item.watchLink = buildTmdbWatchLink(item, DEFAULT_WATCH_REGION);
   }
   try {
-    const providerLink = await fetchWatchProviderLink(
-      item.tmdbId,
-      item.mediaType,
-      DEFAULT_WATCH_REGION
-    );
+    const regionData = await fetchWatchProviderInfo(item.tmdbId, item.mediaType);
+    if (!regionData) {
+      if (!item.watchProviderName) {
+        item.watchProviderName = "";
+      }
+      return item.watchLink;
+    }
+    const provider = pickBestProvider(regionData);
+    let providerLink = regionData.link || "";
+    if (provider) {
+      const builder = PROVIDER_LINK_BUILDERS[provider.provider_id];
+      providerLink = builder
+        ? builder(item)
+        : buildTmdbWatchLink(item, DEFAULT_WATCH_REGION);
+      item.watchProviderName = provider.provider_name || "";
+    } else {
+      item.watchProviderName = "";
+    }
+    if (!providerLink) {
+      providerLink = buildTmdbWatchLink(item, DEFAULT_WATCH_REGION);
+    }
     if (providerLink && providerLink !== item.watchLink) {
       item.watchLink = providerLink;
-      saveWatchlist();
-      return providerLink;
+      saveWatchlist({ skipRemote: true });
     }
+    return item.watchLink;
   } catch (error) {
     console.warn("Failed to fetch watch providers", error);
   }
@@ -1302,6 +1366,13 @@ function renderWatchlist(filter = "all") {
 
     if (watchBtn) {
       initializeWatchButton(watchBtn, item, { stopPropagation: true });
+      ensureWatchLink(item)
+        .then(() => {
+          if (watchBtn.isConnected) {
+            initializeWatchButton(watchBtn, item, { stopPropagation: true });
+          }
+        })
+        .catch(() => {});
     }
     if (trailerBtn) {
       initializeTrailerButton(trailerBtn, item, { stopPropagation: true });
@@ -1326,7 +1397,17 @@ function formatStatusLabel(status) {
 function initializeWatchButton(button, item, { stopPropagation = false } = {}) {
   if (!button || !item) return;
   if (!item.watchLink) {
-    item.watchLink = buildTmdbLink(item);
+    item.watchLink = buildTmdbWatchLink(item, DEFAULT_WATCH_REGION);
+  }
+  const labelEl = button.querySelector(".watch-label");
+  if (labelEl) {
+    labelEl.textContent = item.watchProviderName
+      ? `Watch · ${item.watchProviderName}`
+      : "Watch";
+  } else {
+    button.textContent = item.watchProviderName
+      ? `Watch · ${item.watchProviderName}`
+      : "Watch";
   }
   button.disabled = !item.watchLink;
   button.onclick = (event) => {

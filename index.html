@@ -238,17 +238,7 @@
             class="favorite-toggle"
             aria-label="Toggle favorite"
           >
-            <svg
-              class="favorite-icon"
-              viewBox="0 0 24 24"
-              role="presentation"
-              aria-hidden="true"
-            >
-              <path
-                d="M12 21s-6.2-4.3-8.8-8.2C1.3 10.1 1 6.7 3.3 5c2.5-1.9 5-0.8 6.4 1.2C11.1 4.2 13.6 3.1 16 5c2.3 1.7 2 5.1 0.1 7.8C18.2 16.7 12 21 12 21Z"
-                fill="currentColor"
-              />
-            </svg>
+            ❤
           </button>
         </div>
         <div class="watch-card-info">
@@ -275,18 +265,15 @@
                 class="watch-now-btn"
                 aria-label="Open watch options"
               >
-                <svg
-                  class="watch-icon"
-                  viewBox="0 0 24 24"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <path
-                    d="M6 4.5h0a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h0l12-6.5Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <span>Watch</span>
+                <span class="watch-icon-wrapper" aria-hidden="true">
+                  <svg class="watch-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M6 4.5h0a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h0l12-6.5Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </span>
+                <span class="watch-label">Watch</span>
               </button>
               <button
                 type="button"
@@ -347,18 +334,15 @@
           </label>
           <div class="modal-watch-actions">
             <button id="detail-watch" type="button" class="watch-pill">
-              <svg
-                class="watch-icon"
-                viewBox="0 0 24 24"
-                role="presentation"
-                aria-hidden="true"
-              >
-                <path
-                  d="M6 4.5h0a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h0l12-6.5Z"
-                  fill="currentColor"
-                />
-              </svg>
-              <span>Watch</span>
+              <span class="watch-icon-wrapper" aria-hidden="true">
+                <svg class="watch-icon" viewBox="0 0 24 24">
+                  <path
+                    d="M6 4.5h0a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h0l12-6.5Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+              <span class="watch-label">Watch</span>
             </button>
             <button id="detail-trailer" type="button" class="trailer-pill">
               ▶ Watch trailer
