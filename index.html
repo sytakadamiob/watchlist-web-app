@@ -24,7 +24,7 @@
             <span class="gradient-text">Save now and watch later.</span>
           </h1>
           <p class="lede">
-            Jot down what you want to watch and image.pngkeep it organized just the way you like.
+            Your fav personal watchlist; keep it organized just the way you like.
           </p>
         </div>
         <div class="profile-card" id="profile-card">
@@ -259,22 +259,7 @@
             </button>
           </div>
           <div class="watch-card-footer">
-            <div class="watch-actions">
-              <button
-                type="button"
-                class="watch-now-btn"
-                aria-label="Open watch options"
-              >
-                <span class="watch-icon-wrapper" aria-hidden="true">
-                  <svg class="watch-icon" viewBox="0 0 24 24">
-                    <path
-                      d="M6 4.5h0a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h0l12-6.5Z"
-                      fill="currentColor"
-                    />
-                  </svg>
-                </span>
-                <span class="watch-label">Watch</span>
-              </button>
+            <div class="watch-card-meta">
               <button
                 type="button"
                 class="watch-trailer-btn"
@@ -282,11 +267,9 @@
               >
                 Trailer
               </button>
-            </div>
-            <div class="watch-card-meta">
               <span class="status-label"></span>
               <span class="status-divider hidden" aria-hidden="true"></span>
-            <div class="tag-list"></div>
+              <div class="tag-list"></div>
             </div>
           </div>
         </div>
@@ -323,23 +306,29 @@
         <h2 id="detail-title"></h2>
         <p id="detail-meta" class="detail-meta"></p>
         <div class="modal-controls">
-          <label>
-            Status
-            <select id="detail-status">
-              <option value="watch_later">Watch later</option>
-              <option value="watching">Watching</option>
-              <option value="on_hold">On hold</option>
-              <option value="finished">Finished</option>
-            </select>
-          </label>
-          <div class="modal-watch-actions">
+          <div class="modal-watch-primary">
             <button
               id="detail-watch"
               type="button"
-              class="watch-pill"
+              class="watch-pill watch-pill--accent"
+              data-watch-plain="false"
             >
-              Watch
+              <span class="watch-icon-wrapper" aria-hidden="true">▶</span>
+              <span class="watch-label">Watch</span>
             </button>
+          </div>
+          <div class="modal-status-trailer">
+            <div class="status-select-wrap">
+              <label>
+                Status
+                <select id="detail-status">
+                  <option value="watch_later">Watch later</option>
+                  <option value="watching">Watching</option>
+                  <option value="on_hold">On hold</option>
+                  <option value="finished">Finished</option>
+                </select>
+              </label>
+            </div>
             <button id="detail-trailer" type="button" class="trailer-pill">
               ▶ Watch trailer
             </button>

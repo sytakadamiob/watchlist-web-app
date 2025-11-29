@@ -695,11 +695,16 @@ if (detailModalEl) {
     const item = watchlist.find((entry) => entry.id === activeDetailId);
     if (!item) return;
     const updates = { status: newStatus };
-    if (newStatus === "finished" && !item.finishedDate) {
+    const isFinished = newStatus === "finished";
+    detailFinishedEl.disabled = !isFinished;
+    detailFinishedEl.placeholder = isFinished ? "mm/dd/yyyy" : "Finished date available when status is Finished";
+    detailFinishedEl.classList.toggle("input-disabled", !isFinished);
+    if (isFinished && !item.finishedDate) {
       updates.finishedDate = new Date().toISOString().slice(0, 10);
     }
-    if (newStatus !== "finished") {
+    if (!isFinished) {
       updates.finishedDate = "";
+      detailFinishedEl.value = "";
     }
     updateWatchlistItem(item.id, updates, { refreshReminders: true });
     renderStats();
@@ -1394,14 +1399,27 @@ function formatStatusLabel(status) {
   return status.replace("_", " ");
 }
 
+function setWatchButtonLabel(button, label) {
+  const labelEl = button.querySelector(".watch-label");
+  if (labelEl) {
+    labelEl.textContent = label;
+  } else {
+    button.textContent = label;
+  }
+}
+
 function initializeWatchButton(button, item, { stopPropagation = false } = {}) {
   if (!button || !item) return;
   if (!item.watchLink) {
     item.watchLink = buildTmdbWatchLink(item, DEFAULT_WATCH_REGION);
   }
-  button.textContent = item.watchProviderName
-    ? `Watch · ${item.watchProviderName}`
-    : "Watch";
+  const plain = button.dataset.watchPlain === "true";
+  const label = plain
+    ? "Watch"
+    : item.watchProviderName
+      ? `Watch · ${item.watchProviderName}`
+      : "Watch";
+  setWatchButtonLabel(button, label);
   button.disabled = !item.watchLink;
   button.onclick = (event) => {
     if (stopPropagation) {
