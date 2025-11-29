@@ -534,6 +534,13 @@ h1 {
 
 .footer-socials {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.footer-socials-row {
+  display: flex;
   align-items: center;
   gap: 0.6rem;
   font-size: 0.83rem;
@@ -542,15 +549,8 @@ h1 {
   flex-wrap: wrap;
 }
 
-.footer-socials span {
+.footer-socials-row span {
   color: rgba(245, 247, 255, 0.65);
-}
-
-.footer-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
 }
 
 .help-toggle {
@@ -568,6 +568,7 @@ h1 {
   gap: 0.5rem;
   transition: border-color 0.2s ease, background 0.2s ease;
   width: fit-content;
+  margin-top: 0.75rem;
 }
 
 .footer-tech-text {
@@ -575,6 +576,7 @@ h1 {
   font-size: 0.78rem;
   color: rgba(245, 247, 255, 0.5);
   letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 .footer-primary > div:first-child {
@@ -631,12 +633,6 @@ h1 {
 }
 
 @media (min-width: 720px) {
-  .footer-actions {
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-  }
-  
   .footer-faq {
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem 2rem;
