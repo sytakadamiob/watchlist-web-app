@@ -197,6 +197,22 @@ function bindEvents() {
     toggleBackToTopVisibility();
   }
   
+  // FAQ toggle
+  const helpToggle = document.querySelector(".help-toggle");
+  const footerFaq = document.getElementById("footer-faq");
+  if (helpToggle && footerFaq) {
+    helpToggle.addEventListener("click", () => {
+      const isExpanded = helpToggle.getAttribute("aria-expanded") === "true";
+      helpToggle.setAttribute("aria-expanded", !isExpanded);
+      footerFaq.classList.toggle("hidden");
+      footerFaq.setAttribute("aria-hidden", isExpanded);
+      const icon = helpToggle.querySelector(".help-icon");
+      if (icon) {
+        icon.style.transform = isExpanded ? "rotate(0deg)" : "rotate(180deg)";
+      }
+    });
+  }
+  
   // Bind sign-in button from initial HTML
   const initialSignInBtn = document.getElementById("profile-signin");
   if (initialSignInBtn) {
