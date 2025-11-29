@@ -57,6 +57,7 @@ let activeStatusFilter = "all";
 let draggedItemId = null;
 let toastTimeout = null;
 let toastHideTimeout = null;
+let statsRenderQueued = false;
 
 function getItemById(id) {
   return watchlist.find((entry) => entry.id === id);
@@ -318,6 +319,20 @@ function renderStats() {
   statsYearEl.textContent = summary.year.toString();
   finishedCountEl.textContent = String(summary.finishedThisYear);
   renderProfileStats(summary);
+}
+
+function queueStatsRender() {
+  if (statsRenderQueued) return;
+  statsRenderQueued = true;
+  const doRender = () => {
+    statsRenderQueued = false;
+    renderStats();
+  };
+  if (typeof requestAnimationFrame === "function") {
+    requestAnimationFrame(doRender);
+  } else {
+    setTimeout(doRender, 0);
+  }
 }
 
 function renderProfileStats(summary) {
@@ -853,6 +868,7 @@ function saveWatchlist({ skipRemote = false } = {}) {
   } catch (error) {
     console.warn("Failed to save watchlist locally", error);
   }
+  queueStatsRender();
   if (!skipRemote && auth && auth.currentUser && db) {
     queueFirestoreSave(auth.currentUser.uid);
   }
