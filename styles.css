@@ -1496,6 +1496,13 @@ h1 {
   flex-wrap: wrap;
   gap: 0.45rem;
   align-items: center;
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.modal-watch-actions button {
+  flex: 1 1 180px;
+  justify-content: center;
 }
 
 .rating-label {
