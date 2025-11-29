@@ -269,13 +269,33 @@
             </button>
           </div>
           <div class="watch-card-footer">
-            <button
-              type="button"
-              class="watch-trailer-btn"
-              aria-label="Open trailer"
-            >
-              Trailer
-            </button>
+            <div class="watch-actions">
+              <button
+                type="button"
+                class="watch-now-btn"
+                aria-label="Open watch options"
+              >
+                <svg
+                  class="watch-icon"
+                  viewBox="0 0 24 24"
+                  role="presentation"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M6 4.5h0a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h0l12-6.5Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <span>Watch</span>
+              </button>
+              <button
+                type="button"
+                class="watch-trailer-btn"
+                aria-label="Open trailer"
+              >
+                Trailer
+              </button>
+            </div>
             <div class="watch-card-meta">
               <span class="status-label"></span>
               <span class="status-divider hidden" aria-hidden="true"></span>
@@ -325,9 +345,25 @@
               <option value="finished">Finished</option>
             </select>
           </label>
-          <button id="detail-trailer" type="button" class="trailer-pill">
-            ▶ Watch trailer
-          </button>
+          <div class="modal-watch-actions">
+            <button id="detail-watch" type="button" class="watch-pill">
+              <svg
+                class="watch-icon"
+                viewBox="0 0 24 24"
+                role="presentation"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6 4.5h0a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h0l12-6.5Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>Watch</span>
+            </button>
+            <button id="detail-trailer" type="button" class="trailer-pill">
+              ▶ Watch trailer
+            </button>
+          </div>
           <div class="rating-group">
             <span class="rating-label">Rating</span>
             <div id="detail-stars" class="rating-stars">

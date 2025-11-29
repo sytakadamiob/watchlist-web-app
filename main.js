@@ -21,6 +21,7 @@ const db = window.firebase ? firebase.firestore() : null;
 // paid backend/proxy such as Firebase Functions Blaze, Cloudflare Workers, etc.
 const TMDB_API_KEY = "4fb7f0c0baf5a13a431c5655b43510c2";
 const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const DEFAULT_WATCH_REGION = "US";
 
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w342";
 const STORAGE_KEY = "vibewatch_list_v1";
@@ -58,6 +59,7 @@ let draggedItemId = null;
 let toastTimeout = null;
 let toastHideTimeout = null;
 let statsRenderQueued = false;
+const watchProviderLinkCache = new Map();
 
 function getItemById(id) {
   return watchlist.find((entry) => entry.id === id);
@@ -108,6 +110,20 @@ function getNextSortIndex() {
 }
 let activeTab = "watchlist";
 let activeDetailId = null;
+
+function applyLegacyDefaults(list = watchlist) {
+  if (!Array.isArray(list) || !list.length) return;
+  let mutated = false;
+  list.forEach((item) => {
+    if (item && !item.watchLink && item.tmdbId) {
+      item.watchLink = buildTmdbLink(item);
+      mutated = true;
+    }
+  });
+  if (mutated) {
+    saveWatchlist({ skipRemote: true });
+  }
+}
 
 function init() {
   bindEvents();
@@ -216,6 +232,7 @@ function initAuth() {
     }
     watchlist = loadLocalWatchlist();
     ensureSortIndex();
+    applyLegacyDefaults();
     renderWatchlist();
     renderReminders();
     renderStats();
@@ -237,6 +254,8 @@ function initAuth() {
     } else {
       watchlist = loadLocalWatchlist();
       ensureSortIndex();
+      applyLegacyDefaults();
+      applyLegacyDefaults();
       renderWatchlist(activeStatusFilter);
       renderReminders();
       renderStats();
@@ -450,6 +469,7 @@ const detailTagSuggestionsEl = document.getElementById("detail-tag-suggestions")
 const detailStarsEl = document.getElementById("detail-stars");
 const detailRemoveEl = document.getElementById("detail-remove");
 const detailTrailerEl = document.getElementById("detail-trailer");
+const detailWatchEl = document.getElementById("detail-watch");
 const toastEl = document.getElementById("toast");
 
 function renderModalTags(item) {
@@ -507,6 +527,9 @@ function populateDetailModal(item) {
   if (detailTrailerEl) {
     initializeTrailerButton(detailTrailerEl, item);
   }
+  if (detailWatchEl) {
+    initializeWatchButton(detailWatchEl, item);
+  }
 }
 
 function syncDetailModal(id) {
@@ -529,6 +552,11 @@ function openDetailModal(id) {
     if (activeDetailId === id && detailTrailerEl) {
       // reinitialize so freshly fetched trailers open immediately
       initializeTrailerButton(detailTrailerEl, item);
+    }
+  });
+  ensureWatchLink(item).then(() => {
+    if (activeDetailId === id && detailWatchEl) {
+      initializeWatchButton(detailWatchEl, item);
     }
   });
 }
@@ -741,6 +769,7 @@ async function loadWatchlistFromFirestore(uid) {
       const data = snap.data();
       if (Array.isArray(data.watchlist)) {
         watchlist = data.watchlist;
+        applyLegacyDefaults();
       } else {
         watchlist = [];
       }
@@ -752,6 +781,7 @@ async function loadWatchlistFromFirestore(uid) {
     console.warn("Failed to load watchlist from Firestore, falling back to local", error);
     watchlist = loadLocalWatchlist();
     ensureSortIndex();
+    applyLegacyDefaults();
   }
 }
 
@@ -764,6 +794,7 @@ function subscribeToWatchlist(uid, localFallback = []) {
   if (localFallback.length) {
     watchlist = localFallback;
     ensureSortIndex();
+    applyLegacyDefaults();
     renderWatchlist(activeStatusFilter);
     renderReminders();
     renderStats();
@@ -794,6 +825,7 @@ function subscribeToWatchlist(uid, localFallback = []) {
       if (mergedList.length) {
         watchlist = mergedList;
         ensureSortIndex();
+        applyLegacyDefaults();
         saveWatchlist({ skipRemote: true });
         renderWatchlist(activeStatusFilter);
         renderReminders();
@@ -805,6 +837,7 @@ function subscribeToWatchlist(uid, localFallback = []) {
       if (!initialSnapshotHandled && localFallback.length) {
         watchlist = localFallback;
         ensureSortIndex();
+        applyLegacyDefaults();
         await docRef.set({ watchlist }, { merge: true });
         saveWatchlist({ skipRemote: true });
         renderWatchlist(activeStatusFilter);
@@ -823,6 +856,8 @@ function subscribeToWatchlist(uid, localFallback = []) {
       console.warn("Realtime watchlist sync failed, falling back to local", error);
       watchlist = loadLocalWatchlist();
       ensureSortIndex();
+      applyLegacyDefaults();
+      applyLegacyDefaults();
       renderWatchlist(activeStatusFilter);
       renderReminders();
       renderStats();
@@ -990,6 +1025,52 @@ async function ensureTrailerUrl(item) {
   }
 }
 
+function buildTmdbLink(item) {
+  if (!item || !item.tmdbId) return "";
+  const typePath = item.mediaType === "tv" ? "tv" : "movie";
+  return `https://www.themoviedb.org/${typePath}/${item.tmdbId}`;
+}
+
+async function fetchWatchProviderLink(tmdbId, mediaType = "movie", region = DEFAULT_WATCH_REGION) {
+  const cacheKey = `${region}-${mediaType}-${tmdbId}`;
+  if (watchProviderLinkCache.has(cacheKey)) {
+    return watchProviderLinkCache.get(cacheKey);
+  }
+  const typePath = mediaType === "tv" ? "tv" : "movie";
+  const url = new URL(`${TMDB_BASE_URL}/${typePath}/${tmdbId}/watch/providers`);
+  url.searchParams.set("api_key", TMDB_API_KEY);
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Failed to load watch providers");
+  }
+  const data = await response.json();
+  const link = data?.results?.[region]?.link || "";
+  watchProviderLinkCache.set(cacheKey, link);
+  return link;
+}
+
+async function ensureWatchLink(item) {
+  if (!item) return "";
+  if (!item.watchLink) {
+    item.watchLink = buildTmdbLink(item);
+  }
+  try {
+    const providerLink = await fetchWatchProviderLink(
+      item.tmdbId,
+      item.mediaType,
+      DEFAULT_WATCH_REGION
+    );
+    if (providerLink && providerLink !== item.watchLink) {
+      item.watchLink = providerLink;
+      saveWatchlist();
+      return providerLink;
+    }
+  } catch (error) {
+    console.warn("Failed to fetch watch providers", error);
+  }
+  return item.watchLink;
+}
+
 function renderSearchResults(items) {
   lastSearchResults = items;
   const template = document.getElementById("search-card-template");
@@ -1059,6 +1140,7 @@ async function addToWatchlist(item) {
     tags: [],
     sortIndex: getNextSortIndex(),
     trailerUrl: "",
+    watchLink: buildTmdbLink(item),
   };
 
   watchlist = [...watchlist, entry];
@@ -1081,6 +1163,10 @@ async function addToWatchlist(item) {
   } catch (error) {
     console.warn("Failed to fetch trailer for", entry.title, error);
   }
+
+  ensureWatchLink(entry).catch((error) => {
+    console.warn("Failed to fetch watch providers for", entry.title, error);
+  });
 }
 
 function renderWatchlist(filter = "all") {
@@ -1125,6 +1211,7 @@ function renderWatchlist(filter = "all") {
     const favoriteBtn = clone.querySelector(".favorite-toggle");
     const orderEl = clone.querySelector(".item-order");
     const trailerBtn = clone.querySelector(".watch-trailer-btn");
+    const watchBtn = clone.querySelector(".watch-now-btn");
 
     const tags = Array.isArray(item.tags) ? item.tags : [];
     const isFavorite = !!item.favorite;
@@ -1213,6 +1300,9 @@ function renderWatchlist(filter = "all") {
       removeItem(item.id);
     });
 
+    if (watchBtn) {
+      initializeWatchButton(watchBtn, item, { stopPropagation: true });
+    }
     if (trailerBtn) {
       initializeTrailerButton(trailerBtn, item, { stopPropagation: true });
     }
@@ -1231,6 +1321,21 @@ function renderWatchlist(filter = "all") {
 function formatStatusLabel(status) {
   if (!status) return "Unknown";
   return status.replace("_", " ");
+}
+
+function initializeWatchButton(button, item, { stopPropagation = false } = {}) {
+  if (!button || !item) return;
+  if (!item.watchLink) {
+    item.watchLink = buildTmdbLink(item);
+  }
+  button.disabled = !item.watchLink;
+  button.onclick = (event) => {
+    if (stopPropagation) {
+      event.stopPropagation();
+    }
+    if (!item.watchLink) return;
+    window.open(item.watchLink, "_blank", "noopener,noreferrer");
+  };
 }
 
 function initializeTrailerButton(button, item, { stopPropagation = false } = {}) {
