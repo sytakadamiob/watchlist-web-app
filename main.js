@@ -1622,7 +1622,7 @@ function renderReminders() {
       <p class="reminder-message">
         You have <strong>${reminderItems.length}</strong> unwatched title${reminderItems.length !== 1 ? "s" : ""} waiting for you!
       </p>
-      ${oldestDays > 0 ? `<p class="reminder-stats">⏰ Oldest item added ${oldestDays} day${oldestDays !== 1 ? "s" : ""} ago - it's time to watch something!</p>` : ""}
+      ${oldestDays > 0 ? `<p class="reminder-stats">Oldest item added ${oldestDays} day${oldestDays !== 1 ? "s" : ""} ago - it's time to watch something!</p>` : ""}
     `;
   }
 
