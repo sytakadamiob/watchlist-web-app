@@ -24,7 +24,7 @@ Watch-l8r is a Firebase-powered watchlist tracker that lets you search TMDb titl
    cd watchlist-web-app
    ```
 2. **Create your Firebase config file**
-   - Copy `firebase-config.example.js` to `firebase-config.js`.
+   - Copy `config/firebase-config.example.js` to `config/firebase-config.js`.
    - Fill in your Firebase Web app values (apiKey, authDomain, projectId, etc.).
    - This file is git-ignored so it stays local.
 3. **Add your TMDb key**  
@@ -32,7 +32,7 @@ Watch-l8r is a Firebase-powered watchlist tracker that lets you search TMDb titl
 4. **Start a local server (choose one)**
    - Python:
      ```bash
-     ./start-server.sh
+     ./scripts/start-server.sh
      # or
      python3 -m http.server 8000
      ```
@@ -58,8 +58,8 @@ You can host the static files anywhere (Firebase Hosting, Netlify, Cloudflare Pa
 
 ## Troubleshooting
 
-- See `README-SERVER.md` for more detailed local server instructions.
-- `FIX-LOCALHOST.md` and `TROUBLESHOOTING.md` cover common Firebase/API errors.
+- See `docs/README-SERVER.md` for more detailed local server instructions.
+- `docs/FIX-LOCALHOST.md` and `docs/TROUBLESHOOTING.md` cover common Firebase/API errors.
 - If `redirect_uri_mismatch` appears, re-check the OAuth client allowed URI list.
 
 ## License

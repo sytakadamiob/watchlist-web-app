@@ -4,7 +4,7 @@ const firebaseConfig = window.__FIREBASE_CONFIG__;
 
 if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_FIREBASE_API_KEY") {
   throw new Error(
-    "Missing Firebase config. Copy firebase-config.example.js to firebase-config.js and fill in your project keys."
+    "Missing Firebase config. Copy config/firebase-config.example.js to config/firebase-config.js and fill in your project keys."
   );
 }
 
