@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://19bbc682.watchl8r-watchlist-web-app.pages.dev/sitemap.xml
+Sitemap: https://7a435b06.watchl8r-watchlist-web-app.pages.dev/sitemap.xml
 
