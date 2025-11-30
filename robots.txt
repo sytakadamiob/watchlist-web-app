@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://0093c16e.watchl8r-watchlist-web-app.pages.dev/sitemap.xml
+
